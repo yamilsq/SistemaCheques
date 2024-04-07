@@ -29,11 +29,15 @@
                         @if (SignInManager.IsSignedIn(User))
                         {
                             <li class="nav-item">
-                                <a class="nav-link text-dark" asp-area="" asp-controller="Proveedors" asp-action="">Proveedores</a>
-                            </li>
-                            <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="Pago" asp-action="">Conceptos de Pago</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="AsientoContable" asp-action="">Asiento Contable</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link text-dark" asp-area="" asp-controller="Proveedors" asp-action="">Proveedores</a>
+                            </li>
+                            
                             <li class="nav-item">
                                 <a class="nav-link text-dark" asp-area="" asp-controller="SolicitudCheque" asp-action="">Solicitud de cheques</a>
                             </li>
