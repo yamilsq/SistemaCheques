@@ -6,6 +6,12 @@
         public string origenCuentaDescripcion { get; set; }
     }
 
+    public class OrigenCuentaDto
+    {
+        public int cuentaContableId { get; set; }
+        public int origenCuentaId { get; set; }
+    }
+
     public class OrigenCuenta
     {
         public int id { get; set; }
