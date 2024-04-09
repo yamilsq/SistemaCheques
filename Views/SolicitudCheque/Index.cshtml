@@ -1,4 +1,4 @@
-﻿@model IEnumerable<SistemaChequesNuevo.Models.SolicitudCheque>
+﻿@model SistemaChequesNuevo.Models.SolicitudCheque
 
 @{
     ViewData["Title"] = "Index";
@@ -9,6 +9,40 @@
 <p>
     <a asp-action="Create">Agregar solicitud de cheque</a>
 </p>
+
+<form asp-action="Search">
+    <div class="row">
+
+       <div class="col-4">
+           <div class="form-group">
+                <label asp-for="ProveedorId" class="control-label"> Proveedor </label>
+                <select asp-for="ProveedorId" class ="form-control" asp-items="ViewBag.ProveedorId"></select>
+            </div>
+       </div>
+        <div class="col-4">
+            <div class="form-group">
+                <label asp-for="CuentaContable" class="control-label"></label>
+                <select asp-for="CuentaContable" class="form-control" asp-items="ViewBag.cuentasContables"></select>
+            </div>
+        </div>
+        <div class="col-4">
+            <label asp-for="FechaDesde" class="control-label"></label>
+            <input asp-for="FechaDesde" class="form-control" />
+        </div>
+        <div class="col-4">
+            <label asp-for="FechaHasta" class="control-label"></label>
+            <input asp-for="FechaHasta" class="form-control" />
+        </div>
+
+    </div>
+    <div class="form-group">
+        <input type="submit" value="Buscar " class="btn btn-primary" />
+    </div>
+</form>
+
+
+
+
 <table class="table">
     <thead>
         <tr>
@@ -37,7 +71,7 @@
         </tr>
     </thead>
     <tbody>
-@foreach (var item in Model) {
+@foreach (var item in Model.Solicitudes) {
         <tr>
             <td>
                 @Html.DisplayFor(modelItem => item.NumeroSolicitud)
@@ -52,7 +86,7 @@
                 @Html.DisplayFor(modelItem => item.Estado)
             </td>
             <td>
-                @Html.DisplayFor(modelItem => item.CuentaContable)
+                @Html.DisplayFor(modelItem => item.CuentaContableDescription)
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.CuentaDestino)

@@ -273,7 +273,7 @@ namespace SistemaChequesNuevo.Controllers
             // Send the request and await the response
             HttpResponseMessage response = await client.SendAsync(request);
 
-            return View(pago);
+            return View("Details");
         }
 
         // GET: Pago/Edit/5
