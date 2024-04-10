@@ -4,60 +4,124 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Editar Proveedor</h1>
+<div class="edit-add active">
 
-<!--<h4>Proveedor</h4>-->
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Nombre" class="control-label"></label>
-                <input asp-for="Nombre" class="form-control" />
-                <span asp-validation-for="Nombre" class="text-danger"></span>
+    <div class="edit-form">
+
+        <h2>Crear proveedor</h2>
+
+        <form asp-action="Create">
+
+            <div asp-validation-summary="ModelOnly"> </div>
+
+            <!-- Nombre -->
+            <div class="form-input">
+                <span asp-validation-for="Nombre" class="icon"></span>
+                <input asp-for="Nombre" class="" />
+                <label asp-for="Nombre" class="form-label">Nombre</label>
             </div>
-            <div class="form-group">
-                <label asp-for="TipoPersona" class="control-label"></label>
-                <input asp-for="TipoPersona" class="form-control" />
-                <span asp-validation-for="TipoPersona" class="text-danger"></span>
+
+            <!-- Tipo de persona -->
+            <div class="form-input">
+                <span asp-validation-for="TipoPersona" class=""></span>
+                <select asp-for="TipoPersona" class="form-select" asp-items="ViewBag.TipoPersona"></select>
+                <label asp-for="TipoPersona" class="form-label">Tipo de persona</label>
             </div>
-            <div class="form-group">
-                <label asp-for="DocumentoIdentificador" class="control-label"></label>
-                <input asp-for="DocumentoIdentificador" class="form-control" />
-                <span asp-validation-for="DocumentoIdentificador" class="text-danger"></span>
+
+            <!-- Cedula -->
+            <div class="form-input">
+                <span asp-validation-for="DocumentoIdentificador" class=""></span>
+                <input asp-for="DocumentoIdentificador" class="" id="Cedula" maxlength="11" />
+                <label asp-for="DocumentoIdentificador" class="form-label">Cedula</label>
+
+
                 @if (@ViewBag.isInvalidCedula != null && @ViewBag.isInvalidCedula)
                 {
                     <span class="text-danger">La cedula es invalida</span>
                 }
             </div>
-            <div class="form-group">
-                <label asp-for="Balance" class="control-label"></label>
-                <input asp-for="Balance" class="form-control" />
-                <span asp-validation-for="Balance" class="text-danger"></span>
+
+            <!-- Balance -->
+            <div class="form-input">
+                <span asp-validation-for="Balance" class=""></span>
+                <input asp-for="Balance" class="" id="Balance" maxlength="10" />
+                <label asp-for="Balance" class="form-label">Balance</label>
             </div>
-            <div class="form-group">
-                <label asp-for="CuentaContable" class="control-label"></label>
-                <input asp-for="CuentaContable" class="form-control" />
-                <span asp-validation-for="CuentaContable" class="text-danger"></span>
+
+            <!-- Cuenta Contable -->
+            <div class="form-input">
+                <span asp-validation-for="CuentaContable" class=""></span>
+                <input asp-for="CuentaContable" class="" type="text" class="" id="CuentaContable" maxlength="10" />
+                <label asp-for="CuentaContable" class="form-label">Cuenta Contable</label>
             </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <input asp-for="Estado" class="form-control" />
-                <span asp-validation-for="Estado" class="text-danger"></span>
+
+            <div class="form-input">
+                <span asp-validation-for="Estado" class=""></span>
+                <select asp-for="Estado" class="form-select">
+                    <option selected disabled>  Seleccione el tipo de persona</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Aprobado">Aprobado</option>
+                    <option value="En Proceso">En Proceso</option>
+                    <option value="Pagado">Pagado</option>
+                    <option value="Rechazado">Rechazado</option>
+                    <option value="Aprobado">Aprobado</option>
+                </select>
+                <label asp-for="Estado" class="form-label">Estado</label>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            <input type="submit" value="Create" class="btn" />
+
+            <div class="login-register">
+                <a asp-action="Index" class="go-back">Back to List</a>
             </div>
+
         </form>
     </div>
 </div>
 
-<div>
-    <a asp-action="Index">Volver a la tabla</a>
-</div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
 }
+
+<script>
+    console.log('Hola');
+    document.addEventListener("DOMContentLoaded", function () {
+        const inputCedula = document.getElementById("Cedula");
+
+        inputCedula.addEventListener('input', function (event) {
+            const inputValue = event.target.value;
+            return onlyNumbers(inputValue);
+        });
+
+        const inputBalance = document.getElementById("Balance");
+
+        inputBalance.addEventListener('input', function (event) {
+            const inputValue = event.target.value;
+            return onlyNumbers(inputValue);
+        });
+
+        const inputCuentaContable = document.getElementById("CuentaContable");
+
+        inputCuentaContable.addEventListener('input', function (event) {
+            const inputValue = event.target.value;
+            return onlyNumbers(inputValue);
+        });
+
+        function onlyNumbers(inputValue) {
+            const lastChar = inputValue[inputValue.length - 1];
+
+            // Permitir números y el signo "+"
+            if (!isNaN(lastChar) || lastChar === "+") {
+                // Permitir la entrada
+            } else {
+                // Bloquear la entrada eliminando el último carácter
+                event.target.value = inputValue.substring(0, inputValue.length - 1);
+            }
+        }
+    });
+
+</script>
+

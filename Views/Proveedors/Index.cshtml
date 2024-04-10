@@ -4,69 +4,78 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Proveedores</h1>
+<div class="table">
 
-<p>
-    <a asp-action="Create">Agregar proveedor</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Nombre)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.TipoPersona)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.DocumentoIdentificador)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Balance)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.CuentaContable)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Estado)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Nombre)
-            </td>
-            <td>
-                    @if (1 == item.TipoPersona)
-                    {
-                        <span> Persona Fisica </span>
-                    }
-                    @if (2 == item.TipoPersona)
-                    {
-                        <span> Persona Juridica </span>
-                    }
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.DocumentoIdentificador)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Balance)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.CuentaContable)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Estado)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Editar</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Detallar</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Eliminar</a>
-            </td>
-        </tr>
-}
-    </tbody>
-</table>
+    <div class="table-header">
+
+        <h1> Proveedores</h1>
+        <a asp-action="Create" class="add-new"><ion-icon name="add-circle"></ion-icon> Crear un nuevo proveedor</a>
+
+    </div>
+
+    <table class="table-body">
+
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Nombre)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.TipoPersona)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.DocumentoIdentificador)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Balance)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.CuentaContable)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Estado)
+                </th>
+                <th>
+                    Acciones
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Nombre)
+                    </td>
+                    <td>
+                        @if (1 == item.TipoPersona)
+                        {
+                            <span> Persona Fisica </span>
+                        }
+                        @if (2 == item.TipoPersona)
+                        {
+                            <span> Persona Juridica </span>
+                        }
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.DocumentoIdentificador)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Balance)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.CuentaContable)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Estado)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="edit-icon"><ion-icon name="create"></ion-icon></a>
+                        <a asp-action="Details" asp-route-id="@item.Id" class="view-icon"><ion-icon name="eye"></ion-icon></a>
+                        <a asp-action="Delete" asp-route-id="@item.Id" class="remove-icon"><ion-icon name="trash"></ion-icon> </a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

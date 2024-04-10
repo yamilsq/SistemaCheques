@@ -4,36 +4,52 @@
     ViewData["Title"] = "Edit";
 }
 
-<h1>Editar registro</h1>
+<div class="edit active">
 
-<!--<h4>Pago</h4>-->
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit">
+    <div class="edit-form">
+
+        <h2>Modificar concepto de pago</h2>
+
+        <form asp-action="Create">
+
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="Id" />
-            <div class="form-group">
-                <label asp-for="Descripcion" class="control-label"></label>
-                <input asp-for="Descripcion" class="form-control" />
+
+            <!-- Descripcion -->
+            <div class="form-input">
                 <span asp-validation-for="Descripcion" class="text-danger"></span>
+                <input asp-for="Descripcion" class="form-control" />
+                <label asp-for="Descripcion" class="form-label">Descripcion</label>
             </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <input asp-for="Estado" class="form-control" />
-                <span asp-validation-for="Estado" class="text-danger"></span>
+
+            <!-- Estados -->
+            <div class="form-input">
+                <span asp-validation-for="Estado" class=""></span>
+                <select asp-for="Estado" class="form-select">
+                    <option selected disabled>  Seleccione el tipo de persona</option>
+                    <option value="Pendiente">Pendiente</option>
+                    <option value="Aprobado">Aprobado</option>
+                    <option value="En Proceso">En Proceso</option>
+                    <option value="Pagado">Pagado</option>
+                    <option value="Rechazado">Rechazado</option>
+                    <option value="Aprobado">Aprobado</option>
+                </select>
+                <label asp-for="Estado" class="form-label">Estado</label>
             </div>
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
+
+            <input type="submit" value="Create" class="btn" />
+
+            <div class="login-register">
+                <a asp-action="Index" class="go-back"> Back to List </a>
             </div>
+
         </form>
     </div>
+
 </div>
 
-<div>
-    <a asp-action="Index">Volver a la tabla</a>
-</div>
 
 @section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-}
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+   }

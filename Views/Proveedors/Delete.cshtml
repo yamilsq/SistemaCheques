@@ -4,54 +4,58 @@
     ViewData["Title"] = "Delete";
 }
 
-<h1>Eliminar</h1>
+<div class="edit active">
 
-<h3>Seguro que desea eliminar este registro?</h3>
-<div>
-    <!--<h4>Proveedor</h4>-->
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Nombre)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Nombre)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.TipoPersona)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.TipoPersona)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.DocumentoIdentificador)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.DocumentoIdentificador)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Balance)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Balance)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CuentaContable)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CuentaContable)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Estado)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Estado)
-        </dd>
-    </dl>
-    
-    <form asp-action="Delete">
-        <input type="hidden" asp-for="Id" />
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
-        <a asp-action="Index">Volver a la tabla</a>
-    </form>
+    <div class="edit-form">
+
+        <h2>Delete</h2>
+
+        <h4>Are you sure you want to delete this?</h4>
+
+        <dl>
+            <dt class="login-register">
+                @Html.DisplayNameFor(model => model.Nombre)
+            </dt>
+            <dd>
+                @Html.DisplayFor(model => model.Nombre)
+            </dd>
+            <dt class="login-register">
+                @Html.DisplayNameFor(model => model.TipoPersona)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.TipoPersona)
+            </dd>
+            <dt class="login-register">
+                @Html.DisplayNameFor(model => model.DocumentoIdentificador)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.DocumentoIdentificador)
+            </dd>
+            <dt class="login-register">
+                @Html.DisplayNameFor(model => model.Balance)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Balance)
+            </dd>
+            <dt class="login-register">
+                @Html.DisplayNameFor(model => model.CuentaContable)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.CuentaContable)
+            </dd>
+            <dt class="login-register">
+                @Html.DisplayNameFor(model => model.Estado)
+            </dt>
+            <dd class="col-sm-10">
+                @Html.DisplayFor(model => model.Estado)
+            </dd>
+        </dl>
+
+        <form asp-action="Delete" class="login-register">
+            <input type="hidden" asp-for="Id" />
+            <input type="submit" value="Delete" class="btn" />
+            <a asp-action="Index" class="go-back">Back to List</a>
+        </form>
+    </div>
+
 </div>
