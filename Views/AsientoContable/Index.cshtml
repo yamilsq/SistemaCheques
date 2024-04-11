@@ -6,124 +6,139 @@
     var modelJs = System.Text.Json.JsonSerializer.Serialize(@Model);
 }
 
-<h1>Conceptos de Asiento Contable</h1>
+<div class="edit-add active">
 
-<form asp-action="Create" id="myForm">
-    <div class="row">
-        <div class="col-md-12">
-            <div class="form-group">
-                <label asp-for="Descripcion" class="control-label"></label>
-                <input asp-for="Descripcion" class="form-control" />
-                <span asp-validation-for="Descripcion" class="text-danger"></span>
+    <div class="edit-form">
+
+        <h2>Crear pasiento contable</h2>
+
+        <form asp-action="Create" id="myForm">
+
+            <!-- Descripcion -->
+            <div class="form-input">
+                <span asp-validation-for="Descripcion" class="icon"></span>
+                <input asp-for="Descripcion"/>
+                <label asp-for="Descripcion" class="form-label">Descripcion</label>
             </div>
-            <div class="form-group">
-                <label asp-for="Estado" class="control-label"></label>
-                <select asp-for="Estado" class="form-control" asp-items="ViewBag.estadosContables"></select>
-                <span asp-validation-for="Estado" class="text-danger"></span>
+
+            <!-- Estados -->
+            <div class="form-input">
+                <span asp-validation-for="Estado" class="icon"></span>
+                <select asp-for="Estado" asp-items="ViewBag.estadosContables"></select>
+                <label asp-for="Estado" class="form-label">Estados</label>
             </div>
-            <div class="form-group">
-                <label asp-for="Moneda" class="control-label"></label>
-                <select asp-for="Moneda" class="form-control" asp-items="ViewBag.monedas"></select>
-                <span asp-validation-for="Moneda" class="text-danger"></span>
+
+            <!-- Moneda -->
+            <div class="form-input">
+                <span asp-validation-for="Moneda" class="icon"></span>
+                <select asp-for="Moneda" asp-items="ViewBag.monedas"></select>
+                <label asp-for="Moneda" class="form-label">Moneda</label>
             </div>
-            <div class="form-group">
-                <label asp-for="Fecha" class="control-label"></label>
-                <input asp-for="Fecha" class="form-control" />
-                <span asp-validation-for="Fecha" class="text-danger"></span>
+
+            <!-- Fecha -->
+            <div class="form-input">
+                <span asp-validation-for="Fecha" class="icon"></span>
+                <input asp-for="Fecha"/>
+                <label asp-for="Fecha" class="form-label">Fecha</label>
             </div>
 
             @foreach (var transaccion in Model.Transacciones)
             {
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label asp-for="@transaccion.Monto" class="control-label"></label>
-                            <input asp-for="@transaccion.Monto" class="form-control" name="Transacciones[@Model.Transacciones.IndexOf(transaccion)].Monto" />
-                            <span asp-validation-for="@transaccion.Monto" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label asp-for="@transaccion.Cuenta" class="control-label"></label>
-                            <select asp-for="@transaccion.Cuenta" class="form-control" asp-items="ViewBag.cuentasContables" name="Transacciones[@Model.Transacciones.IndexOf(transaccion)].Cuenta"></select>
-                            <span asp-validation-for="@transaccion.Cuenta" class="text-danger"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-4" style="display: flex; justify-content: space-between; align-items: center">
-                        <span id="Transacciones[@Model.Transacciones.IndexOf(transaccion)].Cuenta-origen" style="margin-top: 25px" ></span>
-                        
-                        @{
-                            if (@Model.Transacciones.IndexOf(transaccion) > 1)
-                            {
-                                <button class="btn btn-danger btn-sm"
-                                        style="margin-top: 25px"
-                                        id="remove-transaction-@Model.Transacciones.IndexOf(transaccion)"
-                                        runat="server">
-                                    X
-                                </button>
-                            }
-                        }
-                    </div>
+
+                <!-- Monto -->
+                <div class="form-input">
+                    <span asp-validation-for="@transaccion.Monto" class="icon"></span>
+                    <input asp-for="@transaccion.Monto" name="Transacciones[@Model.Transacciones.IndexOf(transaccion)].Monto" />
+                    <label asp-for="@transaccion.Monto" class="form-label">Monto</label>
                 </div>
-            }
-            <button class="btn btn-primary" id="addTransaccionButton" runat="server">Add Transaccion</button>
 
-        </div>
+
+                <!-- Cuenta -->
+                <div class="form-input">
+                    <span asp-vali dation-for="@transaccion.Cuenta" class="icon"></span>
+                    <select asp-for="@transaccion.Cuenta" class="form-control" asp-items="ViewBag.cuentasContables" name="Transacciones[@Model.Transacciones.IndexOf(transaccion)].Cuenta"></select>
+                    <label asp-for="@transaccion.Cuenta" class="form-label"></label>
+                </div>
+
+
+                <div class="col-md-4">
+                    <span id="Transacciones[@Model.Transacciones.IndexOf(transaccion)].Cuenta-origen"></span>
+
+                    @{
+                        if (@Model.Transacciones.IndexOf(transaccion) > 1)
+                        {
+                            <button class="btn btn-danger btn-sm"
+                                    style="margin-top: 25px"
+                                    id="remove-transaction-@Model.Transacciones.IndexOf(transaccion)"
+                                    runat="server">
+                                Remove Transaction
+                            </button>
+                        }
+                    }
+                </div>
+
+            }
+
+            <div class="login-register">
+                <a class="go-back" id="addTransaccionButton" runat="server">Add transaction</a>
+            </div>
+
+            
+            <input type="submit" id="submit-form" value="Create" class="btn">
+            
+
+        </form>
+
+        <script>
+            const origenCuentasMapper = JSON.parse('@Html.Raw(origenCuentaUIMapperJs)');
+            const selectElements = document.querySelectorAll('select');
+
+            selectElements.forEach(function (selectElement) {
+                //
+                const selectedOption = selectElement.options[selectElement.selectedIndex];
+                const selectedValue = selectedOption.value;
+                if (selectedValue) {
+                    const spanElement = document.getElementById(`${selectElement.name}-origen`);
+                    if (spanElement) {
+                        spanElement.textContent = `Cuenta de origen: ${origenCuentasMapper.find(o => o.cuentaContableId == selectedValue).origenCuentaDescripcion}`;
+                    }
+                }
+                //
+                selectElement.addEventListener('change', function (event) {
+                    const changedSelect = event.target;
+                    const newValue = changedSelect.value;
+                    const spanElement = document.getElementById(`${event.srcElement.attributes.name.value}-origen`);
+                    if (spanElement) {
+                        spanElement.textContent = `Cuenta de origen: ${origenCuentasMapper.find(o => o.cuentaContableId == newValue).origenCuentaDescripcion}`;
+                    }
+                });
+            });
+        </script>
+        <script>
+            // Get all buttons whose IDs start with "remove-transaction"
+            const removeButtons = document.querySelectorAll('[id^="remove-transaction"]');
+            console.log(removeButtons);
+            // Attach event listeners to each button
+            removeButtons.forEach(function (button) {
+                button.addEventListener('click', function () {
+                    // Extract the ID from the button ID
+                    const id = button.id.split('-')[2];
+                    document.getElementById("myForm").action = `/AsientoContable/OnRemoveTransaction/${id}`;
+                    document.getElementById("myForm").submit();
+                });
+            });
+
+            document.getElementById("addTransaccionButton").addEventListener("click", function () {
+                // Change the action attribute of the form
+                document.getElementById("myForm").action = "/AsientoContable/OnAddTransaction";
+                document.getElementById("myForm").submit();
+            });
+
+            document.getElementById("submit-form").addEventListener("click", function () {
+                // Change the action attribute of the form
+                document.getElementById("myForm").action = "/AsientoContable/Create";
+                document.getElementById("myForm").submit();
+            });
+        </script>
     </div>
-    <div class="form-group">
-        <button id="submit-form" value="Create" class="btn btn-primary">Create</button>
-    </div>
-
-</form>
-
-<script>
-    const origenCuentasMapper = JSON.parse('@Html.Raw(origenCuentaUIMapperJs)');
-    const selectElements = document.querySelectorAll('select');
-
-    selectElements.forEach(function (selectElement) {
-        //
-        const selectedOption = selectElement.options[selectElement.selectedIndex];
-        const selectedValue = selectedOption.value;
-        if (selectedValue) {
-            const spanElement = document.getElementById(`${selectElement.name}-origen`);
-            if (spanElement) {
-                spanElement.textContent = `Cuenta de origen: ${origenCuentasMapper.find(o => o.cuentaContableId == selectedValue).origenCuentaDescripcion}`;
-            }
-        }
-        //
-        selectElement.addEventListener('change', function (event) {
-            const changedSelect = event.target;
-            const newValue = changedSelect.value;
-            const spanElement = document.getElementById(`${event.srcElement.attributes.name.value}-origen`);
-            if (spanElement) {
-                spanElement.textContent = `Cuenta de origen: ${origenCuentasMapper.find(o => o.cuentaContableId == newValue).origenCuentaDescripcion}`;
-            }
-        });
-    });
-</script>
-<script>
-    // Get all buttons whose IDs start with "remove-transaction"
-    const removeButtons = document.querySelectorAll('[id^="remove-transaction"]');
-    console.log(removeButtons);
-    // Attach event listeners to each button
-    removeButtons.forEach(function (button) {
-        button.addEventListener('click', function () {
-            // Extract the ID from the button ID
-            const id = button.id.split('-')[2];
-            document.getElementById("myForm").action = `/AsientoContable/OnRemoveTransaction/${id}`;
-            document.getElementById("myForm").submit();
-        });
-    });
-
-    document.getElementById("addTransaccionButton").addEventListener("click", function () {
-        // Change the action attribute of the form
-        document.getElementById("myForm").action = "/AsientoContable/OnAddTransaction";
-        document.getElementById("myForm").submit();
-    });
-
-    document.getElementById("submit-form").addEventListener("click", function () {
-        // Change the action attribute of the form
-        document.getElementById("myForm").action = "/AsientoContable/Create";
-        document.getElementById("myForm").submit();
-    });
-</script>
+</div>

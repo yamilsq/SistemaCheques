@@ -164,6 +164,21 @@
 	text-align: center;
 }
 
+h1 {
+	color: #006DA4;
+	text-align: center;
+}
+
+p {
+	color: #8AAEE0;
+	text-align: center;
+}
+
+th {
+	color: #8AAEE0;
+	text-align: center;
+}
+
 .input-box, .form-input {
 	position: relative;
 	width: 100%;
@@ -405,7 +420,8 @@ thead th{
 /* Editar form */
 
 .edit, .edit-add {
-	position: absolute;
+
+
 	width: 400px;
 	height: auto;
 	background: transparent;
@@ -420,8 +436,9 @@ thead th{
 	transition: transform .5s ease;
 }
 
-.edit-add {
-	margin-top: 90px;
+/*position: absolute;*/.edit-add {
+	margin-top: 90px;	
+
 }
 
 .edit.active {
@@ -434,14 +451,14 @@ thead th{
 }
 
 
-/* Editar y Guardar form de proveedores y registro de cheques */
-
-
-.edit-add.active {
-	transform: scale(1);
-}
+/* Editar y Guardar form de proveedores y registro de cheques 
 
 .edit-form {
 	width: 100%;
 	padding: 40px;
+}*/
+.edit-add.active {
+	transform: scale(1);
 }
+
+

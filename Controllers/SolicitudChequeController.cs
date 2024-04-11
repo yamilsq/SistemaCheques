@@ -38,15 +38,16 @@ namespace SistemaChequesNuevo.Controllers
         public async Task<IActionResult> Index()
         {
             var cuentasContables = await GetCuentaContableAsync();
-            var applicationDbContext = _context.SolicitudCheques.Include(s => s.Proveedor);
-            var solicitudes = await applicationDbContext.ToListAsync();
+            var solicitudes = await _context.SolicitudCheques.Select(s => s.Proveedor).ToListAsync();
+                
+            //var solicitudes = await applicationDbContext.ToListAsync();
 
 
             var cuentasContablesList = cuentasContables.Where(x => !String.IsNullOrEmpty(x.Value)).ToList();
 
             foreach (var solicitud in solicitudes)
             {
-                solicitud.CuentaContableDescription = cuentasContablesList.FirstOrDefault(x => Convert.ToInt32(x.Value) == solicitud.CuentaContable).Text;
+                solicitud.CuentaContable = cuentasContablesList.FirstOrDefault(x => int.Parse(x.Value) == int.Parse(solicitud.CuentaContable)).Text;
             }
 
             var providers = _context.Proveedores.ToList();
@@ -56,7 +57,7 @@ namespace SistemaChequesNuevo.Controllers
             ViewBag.cuentasContables = cuentasContables;
 
             var dto = new SolicitudCheque();
-            dto.Solicitudes = solicitudes;
+            dto.Solicitudes = (ICollection<SolicitudCheque>)solicitudes;
             return View(dto);
         }
 
