@@ -14,12 +14,16 @@ namespace SistemaChequesNuevo.Data
         public DbSet<Pago> Pagos { get; set; }
         public DbSet<SolicitudCheque> SolicitudCheques { get; set; }
 
-        //public override void OnModelCreating(ModelBuilder modelBuilder) 
-        //{
-        //    modelBuilder.Entity<SolicitudCheque>()
-        //        .HasOne(p => p.Proveedor)
-        //        .WithMany(a => a.SolicitudCheques)
-        //        .HasForeignKey(p => p.ProveedorId);
-        //} 
+        // Generar cheque a partir de una solicitud
+        public DbSet<Solicitud> Solicitudes { get; set; }
+
+        /*
+        public override void OnModelCreating(ModelBuilder modelBuilder) 
+        {
+            modelBuilder.Entity<SolicitudCheque>()
+                .HasOne(p => p.Proveedor)
+                .WithMany(a => a.SolicitudCheques)
+               .HasForeignKey(p => p.ProveedorId);
+        } */
     }
 }

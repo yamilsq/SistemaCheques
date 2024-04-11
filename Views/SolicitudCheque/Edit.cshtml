@@ -2,127 +2,61 @@
 
 @{
     ViewData["Title"] = "Edit";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="edit-add active">
+<h1>Edit</h1>
 
-    <div class="edit-form">
-
-        <h2>Crear Solicitud de cheque</h2>
-
-        <form asp-action="Create">
-
-            <div asp-validation-summary="ModelOnly"></div>
-
-            <!-- NumeroSolicitud -->
-            <div class="form-input">
-                <span asp-validation-for="NumeroSolicitud" class="icon"></span>
-                <input asp-for="NumeroSolicitud" class="" id="NumeroSolicitud" maxlength="10" />
-                <label asp-for="NumeroSolicitud" class="form-label">Numero de Solicitud</label>
+<h4>SolicitudCheque</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="Id" />
+            <div class="form-group">
+                <label asp-for="NumeroSolicitud" class="control-label"></label>
+                <input asp-for="NumeroSolicitud" class="form-control" />
+                <span asp-validation-for="NumeroSolicitud" class="text-danger"></span>
             </div>
-
-            <!-- Monto -->
-            <div class="form-input">
-                <span asp-validation-for="Monto"></span>
-                <input asp-for="Monto" type="text" id="Monto" maxlength="10" />
-                <label asp-for="Monto" class="form-label">Monto</label>
+            <div class="form-group">
+                <label asp-for="Monto" class="control-label"></label>
+                <input asp-for="Monto" class="form-control" />
+                <span asp-validation-for="Monto" class="text-danger"></span>
             </div>
-
-            <!-- Fecha de Registro -->
-            <div class="form-input">
-                <span asp-validation-for="FechaRegistro" class="icon"></span>
+            <div class="form-group">
+                <label asp-for="FechaRegistro" class="control-label"></label>
                 <input asp-for="FechaRegistro" class="form-control" />
-                <label asp-for="FechaRegistro" class="form-label"> Fecha de registro</label>
+                <span asp-validation-for="FechaRegistro" class="text-danger"></span>
             </div>
-
-            <!-- Estado -->
-            <div class="form-input">
-                <span asp-validation-for="Estado" class=""></span>
-                <select asp-for="Estado" class="form-select">
-                    <option selected disabled>  Seleccione el tipo de persona</option>
-                    <option value="Pendiente">Pendiente</option>
-                    <option value="Aprobado">Aprobado</option>
-                    <option value="En Proceso">En Proceso</option>
-                    <option value="Pagado">Pagado</option>
-                    <option value="Rechazado">Rechazado</option>
-                    <option value="Aprobado">Aprobado</option>
-                </select>
-                <label asp-for="Estado" class="form-label">Estado</label>
+            <div class="form-group">
+                <label asp-for="Estado" class="control-label"></label>
+                <input asp-for="Estado" class="form-control" />
+                <span asp-validation-for="Estado" class="text-danger"></span>
             </div>
-
-            <!-- Cuenta Contable -->
-            <div class="form-input">
-                <span asp-validation-for="CuentaContable" class="icon"></span>
-                <input asp-for="CuentaContable" class="" maxlength="10" />
-                <label asp-for="CuentaContable" class="form-label">Cuenta Contable</label>
+            <div class="form-group">
+                <label asp-for="CuentaContable" class="control-label"></label>
+                <input asp-for="CuentaContable" class="form-control" />
+                <span asp-validation-for="CuentaContable" class="text-danger"></span>
             </div>
-
-            <!-- Cuenta de Banco -->
-            <div class="form-input">
-                <span asp-validation-for="CuentaDestino" class="icon"></span>
-                <input asp-for="CuentaDestino" class="" id="CuentaProveedor" maxlength="10" />
+            <div class="form-group">
                 <label asp-for="CuentaDestino" class="control-label"></label>
+                <input asp-for="CuentaDestino" class="form-control" />
+                <span asp-validation-for="CuentaDestino" class="text-danger"></span>
             </div>
-
-            <!-- Cuenta de Proveedor -->
-            <div class="form-input">
-                <span asp-validation-for="ProveedorId" class="icon"></span>
-                <select asp-for="ProveedorId" class="form-select" asp-items="ViewBag.ProveedorId"></select>
-                <label asp-for="ProveedorId" class="form-label"></label>
+            <div class="form-group">
+                <label asp-for="ProveedorId" class="control-label"></label>
+                <select asp-for="ProveedorId" class="form-control" asp-items="ViewBag.ProveedorId"></select>
+                <span asp-validation-for="ProveedorId" class="text-danger"></span>
             </div>
-
-            <button type="submit" value="Create" class="btn">Create</button>
-
-            <div class="login-register">
-                <a asp-action="Index" class="go-back">Back to List</a>
+            <div class="form-group">
+                <input type="submit" value="Save" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
 
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}
-
-<script>
-    console.log('Hola');
-    document.addEventListener("DOMContentLoaded", function () {
-        const inputCuentaContable = document.getElementById("CuentaContable");
-
-        inputCuentaContable.addEventListener('input', function (event) {
-            const inputValue = event.target.value;
-            return onlyNumbers(inputValue);
-        });
-
-        const inputMonto = document.getElementById("Monto");
-
-        inputMonto.addEventListener('input', function (event) {
-            const inputValue = event.target.value;
-            return onlyNumbers(inputValue);
-        });
-
-        const inputCuentaProveedor = document.getElementById("CuentaProveedor");
-
-        inputCuentaProveedor.addEventListener('input', function (event) {
-            const inputValue = event.target.value;
-            return onlyNumbers(inputValue);
-        });
-
-        function onlyNumbers(inputValue) {
-            const lastChar = inputValue[inputValue.length - 1];
-
-            // Permitir números y el signo "+"
-            if (!isNaN(lastChar) || lastChar === "+") {
-                // Permitir la entrada
-            } else {
-                // Bloquear la entrada eliminando el último carácter
-                event.target.value = inputValue.substring(0, inputValue.length - 1);
-            }
-        }
-    });
-
-</script>

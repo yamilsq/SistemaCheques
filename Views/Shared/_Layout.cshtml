@@ -30,7 +30,7 @@
 
             <!--  <div class="navbar"> -->
             <!--<a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index"> Sistema de cheques</a>-->
-            <a asp-area="" asp-controller="Home" asp-action="Index">Cheques Generados</a>
+            
 
             @if (SignInManager.IsSignedIn(User))
             {
@@ -38,7 +38,7 @@
                 <a asp-area="" asp-controller="Pago" asp-action="">Conceptos de Pago</a>
                 <a asp-area="" asp-controller="SolicitudCheque" asp-action="">Solicitud de cheques</a>
                 <a asp-area="" asp-controller="AsientoContable" asp-action=""> Asiento Contable </a>
-               
+                <a asp-area="" asp-controller="GenerarCheques" asp-action="Index"> Cheques Generados</a>
             }
 
             <partial name="_LoginPartial" />
