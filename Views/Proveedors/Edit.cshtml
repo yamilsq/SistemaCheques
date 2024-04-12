@@ -31,19 +31,26 @@
             <!-- Cedula -->
             <div class="form-input">
                 <span asp-validation-for="DocumentoIdentificador" class=""></span>
-                <input asp-for="DocumentoIdentificador" class="" id="Cedula" maxlength="11" />
+                <input min="0" asp-for="DocumentoIdentificador" class="" id="Cedula" maxlength="11" />
                 <label asp-for="DocumentoIdentificador" class="form-label">Cedula</label>
-
 
                 @if (@ViewBag.isInvalidCedula != null && @ViewBag.isInvalidCedula)
                 {
-                    <span class="text-danger">La cedula es invalida</span>
+                    <span class="text-danger">
+                        @{
+                            @ViewBag.DocumentoErrorMessage
+                        }
+                    </span>
                 }
             </div>
 
             <!-- Balance -->
             <div class="form-input">
                 <span asp-validation-for="Balance" class=""></span>
+                @if (@ViewBag.isNegativeBalance != null && @ViewBag.isNegativeBalance)
+                {
+                    <span class="text-danger"> El balance no puede ser negativo</span>
+                }
                 <input asp-for="Balance" class="" id="Balance" maxlength="10" />
                 <label asp-for="Balance" class="form-label">Balance</label>
             </div>
@@ -51,7 +58,7 @@
             <!-- Cuenta Contable -->
             <div class="form-input">
                 <span asp-validation-for="CuentaContable" class=""></span>
-                <input asp-for="CuentaContable" class="" type="text" class="" id="CuentaContable" maxlength="10" />
+                <select asp-for="CuentaContable" class="" id="CuentaContable" asp-items="ViewBag.cuentasContables"></select>
                 <label asp-for="CuentaContable" class="form-label">Cuenta Contable</label>
             </div>
 

@@ -9,6 +9,10 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using SistemaChequesNuevo.Data;
 using SistemaChequesNuevo.Models;
+using System.Text.RegularExpressions;
+using Newtonsoft.Json;
+using SistemaChequesNuevo.Dtos;
+using SistemaChequesNuevo.Helpers;
 
 namespace SistemaChequesNuevo.Controllers
 {
@@ -21,18 +25,44 @@ namespace SistemaChequesNuevo.Controllers
             new OptionTemplate { Value = 1, Text = "Fisica" },
             new OptionTemplate { Value = 2, Text = "Juridica" },
         };
-
         public ProveedorsController(ApplicationDbContext context)
         {
             _context = context;
         }
 
-        
+
+        private async Task<SelectList> GetCuentaContableAsync()
+        {
+            using var client = new HttpClient();
+            var cuentasContablesResponse = await client.GetAsync(ContabilidadAPIConstans.CUENTAS_CONTABLES);
+            var cuentasContablesResponseBody = cuentasContablesResponse.IsSuccessStatusCode ? await cuentasContablesResponse.Content.ReadAsStringAsync() : "";
+            var cuentasContables = JsonConvert.DeserializeObject<CuentaContableResponse>(cuentasContablesResponseBody);
+            return new SelectList(new List<SelectListItem> { new SelectListItem() { Value = "", Text = "Seleccione una Cuenta Contable" } }.Concat(cuentasContables.cuentasContables.Select(p => new SelectListItem { Value = p.id.ToString(), Text = p.descripcion })), "Value", "Text");
+        }
+
+        private SelectList GetTipoPersona()
+        {
+            var defaultOption = new SelectListItem() { Value = "", Text = "Seleccione tipo de persona" };
+            var selectList = new SelectList(new List<SelectListItem> { defaultOption }.Concat(options.Select(p => new SelectListItem { Value = p.Value.ToString(), Text = p.Text })), "Value", "Text");
+            return selectList;
+        }
+
         // GET: Proveedors
         public async Task<IActionResult> Index()
         {
-            return _context.Proveedores != null ? 
-                          View(await _context.Proveedores.ToListAsync()) :
+            var data = await _context.Proveedores.ToListAsync();
+            var cuentasContables = await GetCuentaContableAsync();
+
+            var cuentasContablesList = cuentasContables.Where(x => !String.IsNullOrEmpty(x.Value)).ToList();
+
+            foreach (var solicitud in data)
+            {
+                solicitud.CuentaContableDescription = cuentasContablesList.FirstOrDefault(x => Convert.ToInt32(x.Value) == solicitud.CuentaContable).Text;
+            }
+
+            return _context.Proveedores != null ?
+                          
+                          View(data) :
                           Problem("Entity set 'ApplicationDbContext.Proveedores'  is null.");
         }
 
@@ -43,28 +73,73 @@ namespace SistemaChequesNuevo.Controllers
             {
                 return NotFound();
             }
-
             var proveedor = await _context.Proveedores
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (proveedor == null)
             {
                 return NotFound();
             }
-
             return View(proveedor);
         }
 
         // GET: Proveedors/Create
-        public IActionResult Create()
-        {
-            var defaultOption = new SelectListItem() { Value = "", Text = "Seleccione tipo de persona" };
-            var selectList = new SelectList(new List<SelectListItem> { defaultOption }.Concat(options.Select(p => new SelectListItem { Value = p.Value.ToString(), Text = p.Text })), "Value", "Text");
-            ViewBag.TipoPersona = selectList;
 
+        private bool esUnRNCValido(string rnc)
+        {
+           
+            try
+            {
+                // Eliminar guiones si están presentes
+                rnc = rnc.Replace("-", "");
+
+                // Verificar longitud
+                if (rnc.Length != 9)
+                {
+                    return false;
+                }
+
+                // Verificar que solo contenga números
+                if (!Regex.IsMatch(rnc, @"^\d+$"))
+                {
+                    return false;
+                }
+
+                // Obtener los dígitos del RNC
+                int[] digitos = new int[9];
+                for (int i = 0; i < 9; i++)
+                {
+                    digitos[i] = int.Parse(rnc[i].ToString());
+                }
+
+                // Calcular dígito verificador
+                int suma = 0;
+                int[] pesos = { 7, 9, 8, 6, 5, 4, 3, 2 };
+                for (int i = 0; i < 8; i++)
+                {
+                    suma += digitos[i] * pesos[i];
+                }
+                int residuo = suma % 11;
+                int verificador = residuo == 0 ? 2 : 11 - residuo;
+
+                // Comparar dígito verificador
+                return digitos[8] == verificador;
+            }
+            catch
+            {
+                return false;
+            }
+
+        }
+
+        // GET: Proveedors/Create
+        public async Task<IActionResult> Create()
+        {
+            ViewBag.cuentasContables = await GetCuentaContableAsync();
+            ViewBag.TipoPersona = GetTipoPersona();
             return View();
         }
 
-        public bool ValidarCedula(string cedula)
+        private bool ValidarCedula(string cedula)
         {
             int digito = 0;
             int digitoVerificador = 0;
@@ -72,29 +147,21 @@ namespace SistemaChequesNuevo.Controllers
             int[] multiplicadores = { 1, 2, 1, 2, 1, 2, 1, 2, 1, 2 };
             int producto = 0;
             int suma = 0;
-
             if (cedula.Contains("-"))
                 cedula = cedula.Replace("-", "");
-
             _ = int.TryParse(cedula.Substring(cedula.Length - 1), out digitoVerificador);
-
             for (int i = 0; i < (cedula.Length - 1); i++)
             {
                 _ = int.TryParse(cedula[i].ToString(), out digito);
                 producto = digito * multiplicadores[i];
-
                 if (producto >= 10)
                     producto = (producto / 10) + (producto % 10);
-
                 suma += producto;
             }
-
             if ((suma + digitoVerificador) % 10 == 0)
                 resultado = true;
-
             return resultado;
         }
-
         // POST: Proveedors/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
@@ -102,8 +169,21 @@ namespace SistemaChequesNuevo.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Nombre,TipoPersona,DocumentoIdentificador,Balance,CuentaContable,Estado")] Proveedor proveedor)
         {
-            var isValidCedula = ValidarCedula(proveedor.DocumentoIdentificador);
-            if (ModelState.IsValid && isValidCedula)
+            
+                var isValidCedula = false;
+            bool containsAlphabeticCharacters = Regex.IsMatch(proveedor.DocumentoIdentificador, @"[a-zA-Z]");
+
+            var validationErrorMessage = proveedor.TipoPersona == options[0].Value
+                    ? "La cedula es invalida"
+                    : "El RNC es invalido";
+
+            isValidCedula = (proveedor.TipoPersona == options[0].Value)
+                    ? !containsAlphabeticCharacters && ValidarCedula(proveedor.DocumentoIdentificador)
+                    : !containsAlphabeticCharacters && esUnRNCValido(proveedor.DocumentoIdentificador);
+
+            var isNegativeBalance = proveedor.Balance < 0;
+
+            if (ModelState.IsValid && isValidCedula && !isNegativeBalance)
             {
                 _context.Add(proveedor);
                 await _context.SaveChangesAsync();
@@ -112,7 +192,17 @@ namespace SistemaChequesNuevo.Controllers
 
             if (!isValidCedula)
             {
+                ViewBag.DocumentoErrorMessage = validationErrorMessage;
+                ViewBag.TipoPersona = GetTipoPersona();
+                ViewBag.cuentasContables = await GetCuentaContableAsync();
                 ViewBag.isInvalidCedula = true;
+            }
+
+            if (isNegativeBalance)
+            {
+                ViewBag.isNegativeBalance = true;
+                ViewBag.TipoPersona = GetTipoPersona();
+                ViewBag.cuentasContables = await GetCuentaContableAsync();
             }
             return View(proveedor);
         }
@@ -124,12 +214,13 @@ namespace SistemaChequesNuevo.Controllers
             {
                 return NotFound();
             }
-
             var proveedor = await _context.Proveedores.FindAsync(id);
             if (proveedor == null)
             {
                 return NotFound();
             }
+            ViewBag.TipoPersona = GetTipoPersona();
+            ViewBag.cuentasContables = await GetCuentaContableAsync();
             return View(proveedor);
         }
 
@@ -145,9 +236,21 @@ namespace SistemaChequesNuevo.Controllers
                 return NotFound();
             }
 
-            var isValidCedula = ValidarCedula(proveedor.DocumentoIdentificador);
+            var isValidCedula = false;
+            bool containsAlphabeticCharacters = Regex.IsMatch(proveedor.DocumentoIdentificador, @"[a-zA-Z]");
 
-            if (ModelState.IsValid && isValidCedula)
+            var validationErrorMessage = proveedor.TipoPersona == options[0].Value
+                ? "La cedula es invalida"
+                : "El RNC es invalido";
+
+      
+                isValidCedula = (proveedor.TipoPersona == options[0].Value)
+                    ? !containsAlphabeticCharacters && ValidarCedula(proveedor.DocumentoIdentificador)
+                    : !containsAlphabeticCharacters && esUnRNCValido(proveedor.DocumentoIdentificador);
+
+            var isNegativeBalance = proveedor.Balance < 0;
+
+            if (ModelState.IsValid && isValidCedula && !isNegativeBalance)
             {
                 try
                 {
@@ -170,7 +273,15 @@ namespace SistemaChequesNuevo.Controllers
 
             if (!isValidCedula)
             {
+                ViewBag.DocumentoErrorMessage = validationErrorMessage;
+                ViewBag.cuentasContables = await GetCuentaContableAsync();
+                ViewBag.TipoPersona = GetTipoPersona();
                 ViewBag.isInvalidCedula = true;
+            }
+
+            if (isNegativeBalance)
+            {
+                ViewBag.isNegativeBalance = true;
             }
             return View(proveedor);
         }
@@ -182,17 +293,14 @@ namespace SistemaChequesNuevo.Controllers
             {
                 return NotFound();
             }
-
             var proveedor = await _context.Proveedores
                 .FirstOrDefaultAsync(m => m.Id == id);
             if (proveedor == null)
             {
                 return NotFound();
             }
-
             return View(proveedor);
         }
-
         // POST: Proveedors/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -207,14 +315,13 @@ namespace SistemaChequesNuevo.Controllers
             {
                 _context.Proveedores.Remove(proveedor);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
-
         private bool ProveedorExists(int id)
         {
-          return (_context.Proveedores?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.Proveedores?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
     public class OptionTemplate
