@@ -10,7 +10,7 @@
 
         <h2>Crear proveedor</h2>
 
-        <form asp-action="Create">
+        <form asp-action="Create" id="miFormulario">
 
             <div asp-validation-summary="ModelOnly"> </div>
 
@@ -89,44 +89,66 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-}
 
-<script>
-    console.log('Hola');
-    document.addEventListener("DOMContentLoaded", function () {
-        const inputCedula = document.getElementById("Cedula");
+    <script>
 
-        inputCedula.addEventListener('input', function (event) {
-            const inputValue = event.target.value;
-            return onlyNumbers(inputValue);
+        document.getElementById("miFormulario").addEventListener("submit", function (event) {
+            event.preventDefault(); // Evita que el formulario se envíe de forma predeterminada
+
+            // Muestra la alerta de SweetAlert
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Your work has been saved successfully",
+                showConfirmButton: false,
+                timer: 1500
+            }).then((result) => {
+                // Cuando se cierre la alerta, envía el formulario
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    document.getElementById("miFormulario").submit();
+                }
+            });
         });
 
-        const inputBalance = document.getElementById("Balance");
+    </script>
+ 
+    <script>
+        console.log('Hola');
+        document.addEventListener("DOMContentLoaded", function () {
+            const inputCedula = document.getElementById("Cedula");
 
-        inputBalance.addEventListener('input', function (event) {
-            const inputValue = event.target.value;
-            return onlyNumbers(inputValue);
-        });
+            inputCedula.addEventListener('input', function (event) {
+                const inputValue = event.target.value;
+                return onlyNumbers(inputValue);
+            });
 
-        const inputCuentaContable = document.getElementById("CuentaContable");
+            const inputBalance = document.getElementById("Balance");
 
-        inputCuentaContable.addEventListener('input', function (event) {
-            const inputValue = event.target.value;
-            return onlyNumbers(inputValue);
-        });
+            inputBalance.addEventListener('input', function (event) {
+                const inputValue = event.target.value;
+                return onlyNumbers(inputValue);
+            });
 
-        function onlyNumbers(inputValue) {
-            const lastChar = inputValue[inputValue.length - 1];
+            const inputCuentaContable = document.getElementById("CuentaContable");
 
-            // Permitir números y el signo "+"
-            if (!isNaN(lastChar) || lastChar === "+") {
-                // Permitir la entrada
-            } else {
-                // Bloquear la entrada eliminando el último carácter
-                event.target.value = inputValue.substring(0, inputValue.length - 1);
+            inputCuentaContable.addEventListener('input', function (event) {
+                const inputValue = event.target.value;
+                return onlyNumbers(inputValue);
+            });
+
+            function onlyNumbers(inputValue) {
+                const lastChar = inputValue[inputValue.length - 1];
+
+                // Permitir números y el signo "+"
+                if (!isNaN(lastChar) || lastChar === "+") {
+                    // Permitir la entrada
+                } else {
+                    // Bloquear la entrada eliminando el último carácter
+                    event.target.value = inputValue.substring(0, inputValue.length - 1);
+                }
             }
-        }
-    });
+        });
 
-</script>
+    </script>
 
+  }

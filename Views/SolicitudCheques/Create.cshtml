@@ -12,14 +12,14 @@
 
         <h2>Crear Solicitud de cheque</h2>
 
-        <form asp-action="Create" id="formulario">
+        <form asp-action="Create" id="miFormulario">
 
             <div asp-validation-summary="ModelOnly"></div>
 
             <!-- NumeroSolicitud -->
             <div class="form-input">
                 <span asp-validation-for="NumeroSolicitud" class="icon"></span>
-                <input asp-for="NumeroSolicitud" name="NumeroSolicitud" id="NumeroSolicitud" min="5" maxlength="5" />
+                <input asp-for="NumeroSolicitud" name="NumeroSolicitud" id="NumeroSolicitud" maxlength="5" />
                 <label asp-for="NumeroSolicitud" class="form-label">Numero de Solicitud</label>
             </div>
 
@@ -52,14 +52,14 @@
             <!-- Cuenta Contable -->
             <div class="form-input">
                 <span asp-validation-for="CuentaContable" class="icon"></span>
-                <input asp-for="CuentaContable" class="" maxlength="12" min="10"/>
+                <input asp-for="CuentaContable" class="" maxlength="12"/>
                 <label asp-for="CuentaContable" class="form-label">Cuenta Contable</label>
             </div>
 
             <!-- Cuenta de Banco -->
             <div class="form-input">
                 <span asp-validation-for="CuentaDestino" class="icon"></span>
-                <input asp-for="CuentaDestino" class="" id="CuentaProveedor" maxlength="12" min="10" />
+                <input asp-for="CuentaDestino" class="" id="CuentaProveedor" maxlength="12" />
                 <label asp-for="CuentaDestino" class="form-label"> Cuenta de Proveedor </label>
             </div>
 
@@ -85,7 +85,29 @@
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-}
+
+    <script>
+
+        document.getElementById("miFormulario").addEventListener("submit", function (event) {
+            event.preventDefault(); // Evita que el formulario se envíe de forma predeterminada
+
+            // Muestra la alerta de SweetAlert
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Your work has been saved successfully",
+                showConfirmButton: false,
+                timer: 1500
+            }).then((result) => {
+                // Cuando se cierre la alerta, envía el formulario
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    document.getElementById("miFormulario").submit();
+                }
+            });
+        });
+
+    </script>
+   }
 
 <script>
     console.log('Hola');

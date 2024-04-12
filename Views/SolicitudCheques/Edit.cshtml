@@ -11,7 +11,7 @@
 
         <h2>Crear Solicitud de cheque</h2>
 
-        <form asp-action="Edit">
+        <form asp-action="Edit" id="miFormulario">
 
             <div asp-validation-summary="ModelOnly"></div>
 
@@ -79,12 +79,33 @@
 </div>
 
 
-
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
-}
+
+    <script>
+
+        document.getElementById("miFormulario").addEventListener("submit", function (event) {
+            event.preventDefault(); // Evita que el formulario se envíe de forma predeterminada
+
+            // Muestra la alerta de SweetAlert
+            Swal.fire({
+                position: "top-end",
+                icon: "success",
+                title: "Your work has been saved successfully",
+                showConfirmButton: false,
+                timer: 1500
+            }).then((result) => {
+                // Cuando se cierre la alerta, envía el formulario
+                if (result.dismiss === Swal.DismissReason.timer) {
+                    document.getElementById("miFormulario").submit();
+                }
+            });
+        });
+
+    </script>
+   }
 
 <script>
     console.log('Hola');

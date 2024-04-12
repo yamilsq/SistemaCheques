@@ -48,7 +48,7 @@
                 <!-- Monto -->
                 <div class="form-input">
                     <span asp-validation-for="@transaccion.Monto" class="icon"></span>
-                    <input asp-for="@transaccion.Monto" name="Transacciones[@Model.Transacciones.IndexOf(transaccion)].Monto" />
+                    <input asp-for="@transaccion.Monto" name="Transacciones[@Model.Transacciones.IndexOf(transaccion)].Monto" maxlength="10"/>
                     <label asp-for="@transaccion.Monto" class="form-label">Monto</label>
                 </div>
 
@@ -85,6 +85,9 @@
 
             <input type="submit" id="submit-form" value="Create" class="btn">
             
+            <div class="login-register">
+                <a class="go-back" id="addTransaccionButton" asp-controller="Proveedors" asp-action=""> Go back </a>
+            </div>
 
         </form>
 
@@ -138,6 +141,24 @@
                 document.getElementById("myForm").action = "/AsientoContable/Create";
                 document.getElementById("myForm").submit();
             });
+
+            // Para crear alertas
+
+            document.getElementById("myForm").addEventListener("submit", function (event) {
+                event.preventDefault(); // Evita que el formulario se envíe de forma predeterminada
+
+                // Muestra la alerta de SweetAlert
+                Swal.fire({
+                    position: "top-end",
+                    icon: "success",
+                    title: "The info has been sent",
+                    showConfirmButton: false,
+                    timer: 1500
+                });
+
+                // Aquí puedes agregar el código para enviar el formulario al servidor, si es necesario
+            });
         </script>
+
     </div>
 </div>
