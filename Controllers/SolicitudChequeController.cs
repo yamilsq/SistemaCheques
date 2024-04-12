@@ -46,7 +46,7 @@ namespace SistemaChequesNuevo.Controllers
 
             foreach (var solicitud in solicitudes)
             {
-                solicitud.CuentaContableDescription = cuentasContablesList.FirstOrDefault(x => Convert.ToInt32(x.Value) == solicitud.CuentaContable).Text;
+                solicitud.CuentaContableDescription = cuentasContablesList.FirstOrDefault(x => Convert.ToInt32(x.Value) == solicitud?.CuentaContable)?.Text ?? "";
             }
 
             var providers = _context.Proveedores.ToList();
@@ -139,6 +139,8 @@ namespace SistemaChequesNuevo.Controllers
         {
             if (ModelState.IsValid)
             {
+                var totalCheckes = _context.SolicitudCheques.OrderByDescending(x => x.NumeroSolicitud)?.FirstOrDefault()?.NumeroSolicitud ?? 0;
+                solicitudCheque.NumeroSolicitud = totalCheckes + 1;
                 _context.Add(solicitudCheque);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -160,6 +162,7 @@ namespace SistemaChequesNuevo.Controllers
             {
                 return NotFound();
             }
+            ViewBag.cuentasContables = await GetCuentaContableAsync();
             ViewData["ProveedorId"] = new SelectList(_context.Proveedores, "Id", "Id", solicitudCheque.ProveedorId);
             return View(solicitudCheque);
         }
@@ -180,6 +183,7 @@ namespace SistemaChequesNuevo.Controllers
             {
                 try
                 {
+                    solicitudCheque.NumeroSolicitud = _context.SolicitudCheques.AsNoTracking().FirstOrDefault(x => x.Id == id).NumeroSolicitud;
                     _context.Update(solicitudCheque);
                     await _context.SaveChangesAsync();
                 }

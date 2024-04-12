@@ -9,7 +9,7 @@ namespace SistemaChequesNuevo.Models
             Solicitudes = new HashSet<SolicitudCheque>();
         }
         public int Id { get; set; }
-        public int NumeroSolicitud { get; set; }
+        public int? NumeroSolicitud { get; set; }
         public decimal? Monto { get; set; }
         public DateTime FechaRegistro { get; set; }
         public string? Estado { get; set; }
