@@ -1,16 +1,15 @@
 ﻿@model SistemaChequesNuevo.Models.SolicitudCheque
 
 @{
-    ViewData["Title"] = "Delete";
+    ViewData["Title"] = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
 <div class="edit active">
 
     <div class="edit-form">
 
-        <h2>Delete</h2>
-
-        <h4>Are you sure you want to delete this?</h4>
+        <h2>Details</h2>
 
         <dl>
             <dt class="login-register">
@@ -23,7 +22,7 @@
                 @Html.DisplayNameFor(model => model.Monto)
             </dt>
             <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.Monto)
+                $@Html.DisplayFor(model => model.Monto)
             </dd>
             <dt class="login-register">
                 @Html.DisplayNameFor(model => model.FechaRegistro)
@@ -40,7 +39,7 @@
             <dt class="login-register">
                 @Html.DisplayNameFor(model => model.CuentaContable)
             </dt>
-            <dd>
+            <dd class="col-sm-10">
                 @Html.DisplayFor(model => model.CuentaContable)
             </dd>
             <dt class="login-register">
@@ -57,10 +56,9 @@
             </dd>
         </dl>
 
-        <form asp-action="Delete" class="login-register">
-            <input type="hidden" asp-for="Id" />
-            <input type="submit" value="Delete" class="btn" />
+        <div class="login-register">
+            <a asp-action="Edit" asp-route-id="@Model?.Id" class="go-back">Edit</a> |
             <a asp-action="Index" class="go-back">Back to List</a>
-        </form>
+        </div>
     </div>
 </div>

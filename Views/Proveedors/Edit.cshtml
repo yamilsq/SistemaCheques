@@ -23,8 +23,8 @@
 
             <!-- Tipo de persona -->
             <div class="form-input">
-                <span asp-validation-for="TipoPersona" class=""></span>
                 <select asp-for="TipoPersona" class="form-select" asp-items="ViewBag.TipoPersona"></select>
+                <span asp-validation-for="TipoPersona" class=""></span>
                 <label asp-for="TipoPersona" class="form-label">Tipo de persona</label>
             </div>
 
@@ -55,10 +55,11 @@
                 <label asp-for="CuentaContable" class="form-label">Cuenta Contable</label>
             </div>
 
+            <!-- Estados -->
             <div class="form-input">
                 <span asp-validation-for="Estado" class=""></span>
                 <select asp-for="Estado" class="form-select">
-                    <option selected disabled>  Seleccione el tipo de persona</option>
+                    <option selected disabled> Seleccione el estado</option>
                     <option value="Pendiente">Pendiente</option>
                     <option value="Aprobado">Aprobado</option>
                     <option value="En Proceso">En Proceso</option>

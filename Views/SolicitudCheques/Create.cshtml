@@ -1,8 +1,10 @@
 ﻿@model SistemaChequesNuevo.Models.SolicitudCheque
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
 
 <div class="edit-add active">
 
@@ -10,14 +12,14 @@
 
         <h2>Crear Solicitud de cheque</h2>
 
-        <form asp-action="Create">
+        <form asp-action="Create" id="formulario">
 
             <div asp-validation-summary="ModelOnly"></div>
 
             <!-- NumeroSolicitud -->
             <div class="form-input">
                 <span asp-validation-for="NumeroSolicitud" class="icon"></span>
-                <input asp-for="NumeroSolicitud" class="" id="NumeroSolicitud" maxlength="10" />
+                <input asp-for="NumeroSolicitud" name="NumeroSolicitud" id="NumeroSolicitud" min="5" maxlength="5" />
                 <label asp-for="NumeroSolicitud" class="form-label">Numero de Solicitud</label>
             </div>
 
@@ -31,21 +33,18 @@
             <!-- Fecha de Registro -->
             <div class="form-input">
                 <span asp-validation-for="FechaRegistro" class="icon"></span>
-                <input asp-for="FechaRegistro" class="form-control" />
-                <label asp-for="FechaRegistro" class="form-label"> Fecha de registro</label>
+                <input asp-for="FechaRegistro" class="form-control" type="date"/>
+                <label asp-for="FechaRegistro" class="form-label"> Fecha de registro </label>
             </div>
 
             <!-- Estado -->
             <div class="form-input">
                 <span asp-validation-for="Estado" class=""></span>
                 <select asp-for="Estado" class="form-select">
-                    <option selected disabled>  Seleccione el tipo de persona</option>
+                    <option selected disabled>  Seleccione el estado del cheque</option>
                     <option value="Pendiente">Pendiente</option>
-                    <option value="Aprobado">Aprobado</option>
-                    <option value="En Proceso">En Proceso</option>
-                    <option value="Pagado">Pagado</option>
-                    <option value="Rechazado">Rechazado</option>
-                    <option value="Aprobado">Aprobado</option>
+                    <option value="Anulado">Anulado</option>
+                    <option value="Generado">Generado</option>
                 </select>
                 <label asp-for="Estado" class="form-label">Estado</label>
             </div>
@@ -53,25 +52,25 @@
             <!-- Cuenta Contable -->
             <div class="form-input">
                 <span asp-validation-for="CuentaContable" class="icon"></span>
-                <input asp-for="CuentaContable" class="" maxlength="10" />
+                <input asp-for="CuentaContable" class="" maxlength="12" min="10"/>
                 <label asp-for="CuentaContable" class="form-label">Cuenta Contable</label>
             </div>
 
             <!-- Cuenta de Banco -->
             <div class="form-input">
                 <span asp-validation-for="CuentaDestino" class="icon"></span>
-                <input asp-for="CuentaDestino" class="" id="CuentaProveedor" maxlength="10" />
-                <label asp-for="CuentaDestino" class="control-label"></label>
+                <input asp-for="CuentaDestino" class="" id="CuentaProveedor" maxlength="12" min="10" />
+                <label asp-for="CuentaDestino" class="form-label"> Cuenta de Proveedor </label>
             </div>
 
             <!-- Cuenta de Proveedor -->
             <div class="form-input">
                 <span asp-validation-for="ProveedorId" class="icon"></span>
                 <select asp-for="ProveedorId" class="form-select" asp-items="ViewBag.ProveedorId"></select>
-                <label asp-for="ProveedorId" class="form-label"></label>
+                <label asp-for="ProveedorId" class="form-label"> Proveedor </label>
             </div>
 
-            <button type="submit" value="Create" class="btn">Create</button>
+            <button type="submit" value="Create" class="btn" onclick="enviarFormulario()">Create</button>
 
             <div class="login-register">
                 <a asp-action="Index" class="go-back">Back to List</a>
@@ -124,5 +123,7 @@
             }
         }
     });
+
+
 
 </script>

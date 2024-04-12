@@ -20,16 +20,16 @@
 
 /*Main Page*/
 .header {
-	position: fixed;
+	position: absolute;
 	top: 0;
 	left: 0;
 	width: 100%;
+	z-index: 100;
 	padding: 20px 100px;
 	background: transparent;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
-	z-index: 99;
 	box-shadow: 0 0 30px rgba(0, 0, 0, .3);
 }
 
@@ -247,9 +247,9 @@ th {
 	text-decoration: none;
 }
 
-		.remember-forgot a:hover, .edit-form a:hover {
-			text-decoration: underline;
-		}
+.remember-forgot a:hover, .edit-form a:hover {
+	text-decoration: underline;
+}
 
 .btn {
 	width: 100%;
@@ -421,7 +421,6 @@ thead th{
 
 .edit, .edit-add {
 
-
 	width: 400px;
 	height: auto;
 	background: transparent;
@@ -434,11 +433,11 @@ thead th{
 	display: flex;
 	transform: scale(0);
 	transition: transform .5s ease;
+	
 }
 
 /*position: absolute;*/.edit-add {
-	margin-top: 90px;	
-
+	margin-top: 150px;	
 }
 
 .edit.active {
@@ -448,6 +447,8 @@ thead th{
 .edit-form {
 	width: 100%;
 	padding: 40px;
+	z-index: 1;
+	position: relative;
 }
 
 
@@ -461,4 +462,21 @@ thead th{
 	transform: scale(1);
 }
 
+/* Botones de estados */
+.generar-cheque-btn, .anular-solicitud-btn {
+	cursor: pointer;
+	font-size: 0.8em;
+	color: #8AAEE0;
+	text-align: center;
+	font-weight: 500;
+	background-color: transparent;
+	justify-content: center;
+	align-items: center;
+	border: none;
+	display: flex;
+}
+
+.generar-cheque-btn:hover, .anular-solicitud-btn:hover {
+	color: #006DA4;
+}
 
