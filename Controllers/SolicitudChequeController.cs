@@ -2,14 +2,19 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 using SistemaChequesNuevo.Data;
+using SistemaChequesNuevo.Dtos;
+using SistemaChequesNuevo.Helpers;
 using SistemaChequesNuevo.Models;
 
 namespace SistemaChequesNuevo.Controllers
 {
+    [Authorize]
     public class SolicitudChequeController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -19,11 +24,81 @@ namespace SistemaChequesNuevo.Controllers
             _context = context;
         }
 
+
+        private async Task<SelectList> GetCuentaContableAsync()
+        {
+            using var client = new HttpClient();
+            var cuentasContablesResponse = await client.GetAsync(ContabilidadAPIConstans.CUENTAS_CONTABLES);
+            var cuentasContablesResponseBody = cuentasContablesResponse.IsSuccessStatusCode ? await cuentasContablesResponse.Content.ReadAsStringAsync() : "";
+            var cuentasContables = JsonConvert.DeserializeObject<CuentaContableResponse>(cuentasContablesResponseBody);
+            return new SelectList(new List<SelectListItem> { new SelectListItem() { Value = "", Text = "Seleccione una Cuenta Contable" } }.Concat(cuentasContables.cuentasContables.Select(p => new SelectListItem { Value = p.id.ToString(), Text = p.descripcion })), "Value", "Text");
+        }
+
         // GET: SolicitudCheque
         public async Task<IActionResult> Index()
         {
+            var cuentasContables = await GetCuentaContableAsync();
             var applicationDbContext = _context.SolicitudCheques.Include(s => s.Proveedor);
-            return View(await applicationDbContext.ToListAsync());
+            var solicitudes = await applicationDbContext.ToListAsync();
+
+
+            var cuentasContablesList = cuentasContables.Where(x => !String.IsNullOrEmpty(x.Value)).ToList();
+
+            foreach (var solicitud in solicitudes)
+            {
+                solicitud.CuentaContableDescription = cuentasContablesList.FirstOrDefault(x => Convert.ToInt32(x.Value) == solicitud?.CuentaContable)?.Text ?? "";
+            }
+
+            var providers = _context.Proveedores.ToList();
+            var defaultOption = new SelectListItem() { Value = "", Text = "Select a provider" };
+            var selectList = new SelectList(new List<SelectListItem> { defaultOption }.Concat(providers.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.Nombre })), "Value", "Text");
+            ViewBag.ProveedorId = selectList;
+            ViewBag.cuentasContables = cuentasContables;
+
+            var dto = new SolicitudCheque();
+            dto.Solicitudes = solicitudes;
+            return View(dto);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Search(SolicitudCheque body)
+        {
+            var cuentasContables = await GetCuentaContableAsync();
+            IQueryable<SolicitudCheque> applicationDbContext = _context.SolicitudCheques.Include(s => s.Proveedor);
+
+            if (body.ProveedorId != null)
+            {
+                applicationDbContext = applicationDbContext.Where(s => s.ProveedorId == body.ProveedorId);
+            }
+
+            if (body.FechaDesde != null && body.FechaHasta != null && body.FechaDesde < body.FechaHasta)
+            {
+                applicationDbContext = applicationDbContext.Where(s => s.FechaRegistro >= body.FechaDesde && s.FechaRegistro <= body.FechaHasta);
+            }
+
+            if (body.CuentaContable != null)
+            {
+                applicationDbContext = applicationDbContext.Where(s => s.CuentaContable == body.CuentaContable);
+            }
+
+            var solicitudes = await applicationDbContext.ToListAsync();
+
+            var cuentasContablesList = cuentasContables.Where(x => !String.IsNullOrEmpty(x.Value)).ToList();
+
+            foreach (var solicitud in solicitudes)
+            {
+                solicitud.CuentaContableDescription = cuentasContablesList.FirstOrDefault(x => Convert.ToInt32(x.Value) == solicitud.CuentaContable).Text;
+            }
+
+            var providers = _context.Proveedores.ToList();
+            var defaultOption = new SelectListItem() { Value = "", Text = "Select a provider" };
+            var selectList = new SelectList(new List<SelectListItem> { defaultOption }.Concat(providers.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.Nombre })), "Value", "Text");
+            ViewBag.ProveedorId = selectList;
+            ViewBag.cuentasContables = cuentasContables;
+
+            var dto = new SolicitudCheque();
+            dto.Solicitudes = solicitudes;
+            return View("Index", dto);
         }
 
         // GET: SolicitudCheque/Details/5
@@ -41,14 +116,24 @@ namespace SistemaChequesNuevo.Controllers
             {
                 return NotFound();
             }
+            var cuentasContables = await GetCuentaContableAsync();
+
+            var cuentasContablesList = cuentasContables.Where(x => !String.IsNullOrEmpty(x.Value)).ToList();
+
+            ViewBag.CuentaContableDescription = cuentasContablesList.FirstOrDefault(x => Convert.ToInt32(x.Value) == solicitudCheque.CuentaContable).Text;
 
             return View(solicitudCheque);
         }
 
         // GET: SolicitudCheque/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
-            ViewData["ProveedorId"] = new SelectList(_context.Proveedores, "Id", "Id");
+            ViewBag.cuentasContables = await GetCuentaContableAsync();
+
+            var providers = _context.Proveedores.ToList();
+            var defaultOption = new SelectListItem() { Value = "", Text = "Select a provider" };
+            var selectList = new SelectList(new List<SelectListItem> { defaultOption }.Concat(providers.Select(p => new SelectListItem { Value = p.Id.ToString(), Text = p.Nombre })), "Value", "Text");
+            ViewBag.ProveedorId = selectList;
             return View();
         }
 
@@ -61,6 +146,8 @@ namespace SistemaChequesNuevo.Controllers
         {
             if (ModelState.IsValid)
             {
+                var totalCheckes = _context.SolicitudCheques.OrderByDescending(x => x.NumeroSolicitud)?.FirstOrDefault()?.NumeroSolicitud ?? 0;
+                solicitudCheque.NumeroSolicitud = totalCheckes + 1;
                 _context.Add(solicitudCheque);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -82,7 +169,9 @@ namespace SistemaChequesNuevo.Controllers
             {
                 return NotFound();
             }
-            ViewData["ProveedorId"] = new SelectList(_context.Proveedores, "Id", "Id", solicitudCheque.ProveedorId);
+            ViewBag.cuentasContables = await GetCuentaContableAsync();
+            ViewData["ProveedorId"] = new SelectList(_context.Proveedores, "Id", "Nombre", solicitudCheque.ProveedorId);
+           
             return View(solicitudCheque);
         }
 
@@ -102,6 +191,7 @@ namespace SistemaChequesNuevo.Controllers
             {
                 try
                 {
+                    solicitudCheque.NumeroSolicitud = _context.SolicitudCheques.AsNoTracking().FirstOrDefault(x => x.Id == id).NumeroSolicitud;
                     _context.Update(solicitudCheque);
                     await _context.SaveChangesAsync();
                 }
@@ -137,6 +227,11 @@ namespace SistemaChequesNuevo.Controllers
             {
                 return NotFound();
             }
+            var cuentasContables = await GetCuentaContableAsync();
+
+            var cuentasContablesList = cuentasContables.Where(x => !String.IsNullOrEmpty(x.Value)).ToList();
+
+            ViewBag.CuentaContableDescription = cuentasContablesList.FirstOrDefault(x => Convert.ToInt32(x.Value) == solicitudCheque.CuentaContable).Text;
 
             return View(solicitudCheque);
         }
@@ -155,14 +250,14 @@ namespace SistemaChequesNuevo.Controllers
             {
                 _context.SolicitudCheques.Remove(solicitudCheque);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool SolicitudChequeExists(int id)
         {
-          return (_context.SolicitudCheques?.Any(e => e.Id == id)).GetValueOrDefault();
+            return (_context.SolicitudCheques?.Any(e => e.Id == id)).GetValueOrDefault();
         }
     }
 }
